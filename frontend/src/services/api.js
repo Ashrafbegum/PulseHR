@@ -17,7 +17,7 @@ api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
-    const message = error.response?.data?.message || error.response?.data?.error || error.message || "Request failed";
+    const message = error.response?.data?.error?.message || error.response?.data?.message || (typeof error.response?.data?.error === "string" ? error.response.data.error : null) || error.message || "Request failed";
 
     if (status === 401) useAuthStore.getState().clearAuth();
 
