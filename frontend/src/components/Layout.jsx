@@ -1,9 +1,23 @@
 import { NavLink, Outlet } from "react-router-dom";
 import { useAuthStore } from "@/store/authStore";
+import { useAppStore } from "@/store/appStore";
 
 export default function Layout({ children }) {
   const user = useAuthStore((state) => state.user);
-  const clearAuth = useAuthStore((state) => state.clearAuth);
+  const logout = useAuthStore((state) => state.logout);
+  const addNotification = useAppStore((state) => state.addNotification);
+
+  async function handleLogout() {
+    try {
+      await logout();
+    } catch (error) {
+      addNotification({
+        type: "error",
+        title: "Sign out problem",
+        message: error.message,
+      });
+    }
+  }
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -12,7 +26,7 @@ export default function Layout({ children }) {
           <NavLink to="/" className="text-lg font-semibold">PulseHR</NavLink>
           <div className="flex items-center gap-4 text-sm">
             {user && <span className="text-muted-foreground">{user.name || user.email}</span>}
-            {user && <button className="underline underline-offset-4" onClick={clearAuth}>Sign out</button>}
+            {user && <button className="underline underline-offset-4" onClick={handleLogout}>Sign out</button>}
           </div>
         </div>
       </header>

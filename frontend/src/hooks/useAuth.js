@@ -7,13 +7,17 @@ function getTokenExpiry(token) {
 }
 
 export default function useAuth() {
-  const auth = useAuthStore();
+  const token = useAuthStore((state) => state.token);
+  const clearAuth = useAuthStore((state) => state.clearAuth);
   useEffect(() => {
-    if (!auth.token) return undefined;
-    const expiry = getTokenExpiry(auth.token);
-    if (!expiry) return undefined;
-    const timeout = window.setTimeout(auth.clearAuth, Math.max(0, expiry - Date.now()));
+    if (!token) return undefined;
+    const expiry = getTokenExpiry(token);
+    if (!expiry) {
+      clearAuth();
+      return undefined;
+    }
+    const timeout = window.setTimeout(clearAuth, Math.max(0, expiry - Date.now()));
     return () => window.clearTimeout(timeout);
-  }, [auth.token, auth.clearAuth]);
-  return auth;
+  }, [token, clearAuth]);
+  return useAuthStore();
 }

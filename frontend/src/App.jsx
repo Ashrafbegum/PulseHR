@@ -5,6 +5,7 @@ import Register from "@/pages/Register";
 import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import useAuth from "@/hooks/useAuth";
+import ToastViewport from "@/components/ToastViewport";
 
 function AuthExpiry() { useAuth(); return null; }
 
@@ -13,6 +14,7 @@ export default function App() {
     <ErrorBoundary>
       <BrowserRouter future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
         <AuthExpiry />
+        <ToastViewport />
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
