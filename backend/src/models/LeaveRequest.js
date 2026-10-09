@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+// Relationships:
+// User -> LeaveRequest (many), Attendance (many), PerformanceReview (many as reviewee, many as reviewer)
+// User -> SalaryStructure (many), Payslip (many)
+// LeaveType -> LeaveRequest (many), LeaveBalance (many)
+// Job -> Candidate (many)
+// PerformanceCycle -> PerformanceReview (many)
+
 const LEAVE_REQUEST_STATUSES = ["draft", "submitted", "approved", "rejected", "cancelled"];
 const HALF_DAY_PERIODS = ["AM", "PM"];
 const MS_PER_DAY = 24 * 60 * 60 * 1000;
@@ -44,9 +51,9 @@ const leaveRequestSchema = new mongoose.Schema(
       validate: [
         {
           validator(value) {
-            return !this.startDate || toUtcDay(value) >= toUtcDay(this.startDate);
+            return !this.startDate || value > this.startDate;
           },
-          message: "Leave end date must be on or after the start date",
+          message: "Leave end date must be after the start date",
         },
         {
           validator(value) {
@@ -64,13 +71,35 @@ const leaveRequestSchema = new mongoose.Schema(
     attachments: { type: [String], default: [] },
     isDeleted: { type: Boolean, default: false },
   },
-  { timestamps: true },
+  {
+    timestamps: true,
+    toJSON: {
+      transform(_doc, ret) {
+        delete ret.password;
+        delete ret.refreshToken;
+        delete ret.refreshTokens;
+        delete ret.resetPasswordToken;
+        delete ret.resetPasswordExpires;
+        return ret;
+      },
+    },
+  },
 );
 
 leaveRequestSchema.index({ userId: 1, status: 1 });
 leaveRequestSchema.index({ approverId: 1, status: 1 });
 leaveRequestSchema.index({ startDate: 1, endDate: 1 });
 leaveRequestSchema.index({ createdAt: 1 });
+
+leaveRequestSchema.pre("save", function validateLeaveDateRange() {
+  if (this.startDate && this.endDate && this.startDate >= this.endDate) {
+    throw new mongoose.Error.ValidatorError({
+      path: "endDate",
+      value: this.endDate,
+      message: "Leave end date must be after the start date",
+    });
+  }
+});
 
 leaveRequestSchema.methods.calculateDays = function calculateDays(holidays = []) {
   const excludedDays = new Set(holidays.map((holiday) => toUtcDay(new Date(holiday)).getTime()));

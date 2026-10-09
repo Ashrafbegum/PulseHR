@@ -5,6 +5,13 @@ import {
   generateRefreshToken as createRefreshToken,
 } from "../services/tokenService.js";
 
+// Relationships:
+// User -> LeaveRequest (many), Attendance (many), PerformanceReview (many as reviewee, many as reviewer)
+// User -> SalaryStructure (many), Payslip (many)
+// LeaveType -> LeaveRequest (many), LeaveBalance (many)
+// Job -> Candidate (many)
+// PerformanceCycle -> PerformanceReview (many)
+
 const USER_ROLES = ["admin", "manager", "employee", "hr", "recruiter"];
 const USER_STATUSES = ["active", "inactive", "suspended"];
 
@@ -34,6 +41,8 @@ const userSchema = new mongoose.Schema(
         delete ret.password;
         delete ret.resetPasswordToken;
         delete ret.resetPasswordExpires;
+        delete ret.refreshToken;
+        delete ret.refreshTokens;
         delete ret.__v;
         return ret;
       },
@@ -41,13 +50,14 @@ const userSchema = new mongoose.Schema(
   },
 );
 
+userSchema.index({ email: 1 }, { unique: true });
 userSchema.virtual("fullName").get(function fullName() {
   return `${this.firstName} ${this.lastName}`.trim();
 });
 
 userSchema.index({ department: 1 });
 userSchema.index({ managerId: 1 });
-userSchema.index({ status: 1, role: 1 });
+userSchema.index({ role: 1, status: 1 });
 
 userSchema.pre("save", async function hashPassword() {
   if (!this.isModified("password")) return;

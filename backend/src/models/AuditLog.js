@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+// Relationships:
+// User -> LeaveRequest (many), Attendance (many), PerformanceReview (many as reviewee, many as reviewer)
+// User -> SalaryStructure (many), Payslip (many)
+// LeaveType -> LeaveRequest (many), LeaveBalance (many)
+// Job -> Candidate (many)
+// PerformanceCycle -> PerformanceReview (many)
+
 const AUDIT_ACTIONS = ["create", "update", "delete", "approve", "reject"];
 
 const changesSchema = new mongoose.Schema(
@@ -20,7 +27,20 @@ const auditLogSchema = new mongoose.Schema(
     timestamp: { type: Date, default: Date.now, immutable: true },
     ipAddress: { type: String, trim: true, default: "", immutable: true },
   },
-  { versionKey: false },
+  {
+    timestamps: true,
+    versionKey: false,
+    toJSON: {
+      transform(_doc, ret) {
+        delete ret.password;
+        delete ret.refreshToken;
+        delete ret.refreshTokens;
+        delete ret.resetPasswordToken;
+        delete ret.resetPasswordExpires;
+        return ret;
+      },
+    },
+  },
 );
 
 auditLogSchema.index({ userId: 1, entity: 1, timestamp: -1 });

@@ -1,5 +1,12 @@
 import mongoose from "mongoose";
 
+// Relationships:
+// User -> LeaveRequest (many), Attendance (many), PerformanceReview (many as reviewee, many as reviewer)
+// User -> SalaryStructure (many), Payslip (many)
+// LeaveType -> LeaveRequest (many), LeaveBalance (many)
+// Job -> Candidate (many)
+// PerformanceCycle -> PerformanceReview (many)
+
 const leaveBalanceSchema = new mongoose.Schema(
   {
     userId: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -11,8 +18,19 @@ const leaveBalanceSchema = new mongoose.Schema(
     lastUpdated: { type: Date, default: Date.now },
   },
   {
+    timestamps: true,
     toObject: { virtuals: true },
-    toJSON: { virtuals: true },
+    toJSON: {
+      virtuals: true,
+      transform(_doc, ret) {
+        delete ret.password;
+        delete ret.refreshToken;
+        delete ret.refreshTokens;
+        delete ret.resetPasswordToken;
+        delete ret.resetPasswordExpires;
+        return ret;
+      },
+    },
     versionKey: false,
   },
 );
