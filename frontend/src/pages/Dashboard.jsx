@@ -1,26 +1,31 @@
+import { CalendarCheck, Clock, Inbox } from "lucide-react";
 import { useAuthStore } from "@/store/authStore";
+import PageHeader from "@/components/PageHeader";
+import { EmptyState } from "@/components/ui/empty-state";
+import { StatCard } from "@/components/ui/stat-card";
+import { formatDate } from "@/lib/datetime";
 
 export default function Dashboard() {
   const user = useAuthStore((state) => state.user);
 
   return (
     <div className="space-y-6">
-      <header className="space-y-1">
-        <p className="eyebrow">PULSEHR · OVERVIEW</p>
-        <h1 className="text-2xl font-semibold">
-          Welcome{user?.name ? `, ${user.name}` : ""}.
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          {user?.email || "You are signed in to your PulseHR workspace."}
-        </p>
-      </header>
-      <section className="rounded-lg border bg-card p-6 text-sm text-card-foreground">
-        <p className="font-medium">Your workspace is ready.</p>
-        <p className="mt-1 text-muted-foreground">
-          Additional PulseHR modules will appear here as backend endpoints become
-          available.
-        </p>
-      </section>
+      <PageHeader
+        title={`Welcome${user?.name ? `, ${user.name.split(" ")[0]}` : ""}`}
+        subtitle={`${formatDate(new Date())} · ${user?.email || "Your PulseHR workspace"}`}
+      />
+
+      <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        <StatCard label="Attendance today" value="—" unit="not tracked yet" icon={Clock} />
+        <StatCard label="Pending leave" value="—" unit="requests" icon={CalendarCheck} />
+        <StatCard label="Inbox" value="—" unit="updates" icon={Inbox} />
+      </div>
+
+      <EmptyState
+        icon={Inbox}
+        title="Nothing to show yet"
+        message="Attendance, leave and team modules will appear here once their services are connected."
+      />
     </div>
   );
 }
