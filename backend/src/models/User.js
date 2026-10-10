@@ -17,18 +17,39 @@ const USER_STATUSES = ["active", "inactive", "suspended"];
 
 const userSchema = new mongoose.Schema(
   {
-    email: { type: String, required: true, unique: true, lowercase: true, trim: true },
+    email: {
+      type: String,
+      required: true,
+      unique: true,
+      lowercase: true,
+      trim: true,
+    },
     password: { type: String, required: true, select: false, minlength: 8 },
     firstName: { type: String, required: true, trim: true },
     lastName: { type: String, required: true, trim: true },
     phone: { type: String, trim: true, default: "" },
     department: { type: String, trim: true, default: "" },
-    managerId: { type: mongoose.Schema.Types.ObjectId, ref: "User", default: null },
-    role: { type: String, enum: USER_ROLES, default: "employee", required: true },
-    status: { type: String, enum: USER_STATUSES, default: "active", required: true },
+    managerId: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+      default: null,
+    },
+    role: {
+      type: String,
+      enum: USER_ROLES,
+      default: "employee",
+      required: true,
+    },
+    status: {
+      type: String,
+      enum: USER_STATUSES,
+      default: "active",
+      required: true,
+    },
     avatar: { type: String, trim: true, default: "" },
     lastLogin: { type: Date, default: null },
     passwordChangedAt: { type: Date, default: null },
+    isEmailVerified: { type: Boolean, default: false },
     resetPasswordToken: { type: String, select: false },
     resetPasswordExpires: { type: Date, select: false },
   },
