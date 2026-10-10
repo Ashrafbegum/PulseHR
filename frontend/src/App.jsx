@@ -10,6 +10,7 @@ import ForgotPassword from "@/pages/ForgotPassword";
 import ResetPassword from "@/pages/ResetPassword";
 import Dashboard from "@/pages/Dashboard";
 import NotFound from "@/pages/NotFound";
+import Unauthorized from "@/pages/Unauthorized";
 import useAuth from "@/hooks/useAuth";
 import ToastViewport from "@/components/ToastViewport";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -39,6 +40,7 @@ export default function App() {
               <Route path="/" element={<Dashboard />} />
               <Route path="/dashboard" element={<Navigate to="/" replace />} />
             </Route>
+            <Route path="/unauthorized" element={<Unauthorized />} />
             {StyleGuide && (
               <Route
                 path="/dev/style-guide"
