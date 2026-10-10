@@ -39,7 +39,7 @@ export default function AuthForm({ title, description, fields, submitLabel, onSu
       <div className="auth-frame">
       <div className="auth-card">
         <div className="auth-topline"><button className="theme-toggle" type="button" onClick={toggleTheme} aria-label="Toggle color theme"><Sun className="size-4 dark:hidden" /><Moon className="hidden size-4 dark:block" /></button></div>
-        <Link className="brand" to="/login" aria-label="PulseHR home"><span className="brand-mark">P</span> pulse<span>hr</span></Link>
+        <Link className="brand" to="/" aria-label="PulseHR home"><span className="brand-mark">P</span> pulse<span>hr</span></Link>
         <header className="auth-heading"><p className="eyebrow">PEOPLE, IN SYNC</p><h1>{title}</h1><p>{description}</p></header>
         <form onSubmit={handleSubmit} noValidate>
           {fields.map(({ name, label, type = "text", autoComplete, placeholder }) => (
