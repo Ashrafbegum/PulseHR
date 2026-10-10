@@ -71,10 +71,12 @@ const userSchema = new mongoose.Schema(
   },
 );
 
-userSchema.index({ email: 1 }, { unique: true });
 userSchema.virtual("fullName").get(function fullName() {
   return `${this.firstName} ${this.lastName}`.trim();
 });
+
+// NOTE: `email` already carries `unique: true` above, which creates its
+// unique index. Do not add another `schema.index({ email: 1 })` here.
 
 userSchema.index({ department: 1 });
 userSchema.index({ managerId: 1 });
